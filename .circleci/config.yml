@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  build:
+    working directory: ~/tmp
+    docker:
+      - image: circle/python3.5.6
+    steps:
+      - ckeckout
+      - run: python test_calc.py
