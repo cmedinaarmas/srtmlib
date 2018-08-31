@@ -14,12 +14,12 @@ void setup(){
 //----------------------------------------------------------------
 int blockSize;
 int normalize = 0;
-String mosaicPath = "/Users/cm/Documents/Processing/output/mosaicRaw.png";    //image storage path
+String mosaicPath = "/home/cm/Documents/cm/strmlib/processing/mosaicRaw.png";    //image storage path
 String txtPath = "/Users/cm/Documents/Processing/output/heights.txt";         //heights file path
 String base;
 BlockList mapFiles;
 
-int source = 7;    //define source of data
+int source = 9;    //define source of data
 
 // 0: Mosaic arc1 1: test arc1  2: Mosaic arc3  3: test arc3   4: Montserrat 
 // 5: Geneve 6:Baltoro 7:CentralAmerica 8:Alps
@@ -74,8 +74,8 @@ switch(source){
             break;
             
   case 9: 
-            base = "/Users/cm/Documents/Processing/digitalElevation/guadaloupe/";       //3 arc resolution 
-            mapFiles = new BlockList("/Documents/Processing/digitalElevation/guadaloupe");
+            base = "/home/cm/Documents/cm/strmlib/processing/digitalElevation/guadaloupe/";       //3 arc resolution 
+            mapFiles = new BlockList("/Documents/cm/strmlib/processing/digitalElevation/guadaloupe");
             blockSize = 1200;
             break;
             
