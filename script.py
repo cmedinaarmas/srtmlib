@@ -1,9 +1,10 @@
 import strmlib as st
 
-data='/home/cm/Documents/cm/strmlib/data/everest/'
+data = '/home/cm/git/strmlib/data/everest/'
 
 # create object
 d = st.Strm(data)
+d.mem()
 print('PID: {0}'.format(d.get_pid()))
 
 #read src folder

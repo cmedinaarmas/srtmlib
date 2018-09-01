@@ -130,25 +130,27 @@ class Strm:
         return self.pid
 
     #get current memory usage
-    def mem(self):
+    def mem(self, msg=False):
 
         process = psutil.Process(self.pid)
         mem = process.memory_info()[0]/float(2**20)
-        print('Mem usage: {0} MB'.format(mem))
+        if msg:
+            print('Mem usage: {0} MB'.format(mem))
 
-        return None
+        return mem
 
     def load_blocks(self):
         self.mem()
         blocks = []
         
-        for i in self.mosaic_found.items():
-            if i[1] == True:
-                print('Creating {0}'.format(i))
-                blocks.append(bl.Block(self.src_dir+i[0],int(self.arc[0]),i))
+        print('Id  Load    Decode  Allocated Mem')
+        for index,item in enumerate(self.mosaic_found.items()):
+            if item[1] == True:
+                blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
         
         for block in blocks:
             block.load_data()
-            self.mem()
+            
+            print('{0:02d}  {1:.4f}s {2:.4f}s {3:.2f}MB'.format(block.index, block.load_t,block.decode_t,self.mem()))
         return None
 
