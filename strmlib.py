@@ -2,8 +2,9 @@ import glob, os
 from collections import defaultdict
 import numpy as np
 import psutil
+from time import time
 
-from tqdm import tqdm
+import multiprocessing as mp
 
 import block as bl
 
@@ -73,7 +74,7 @@ class Strm:
         
         print('Exploring {0}'.format(self.src_dir))
         
-        for file_name in tqdm(glob.glob("*.bil")):
+        for file_name in glob.glob("*.bil"):
 
             raw_name = file_name.split('_')
             raw_name[3] = raw_name[3].split('.')[0]
@@ -140,17 +141,46 @@ class Strm:
         return mem
 
     def load_blocks(self):
+        
+
         self.mem()
         blocks = []
         
-        print('Id  Load    Decode  Allocated Mem')
+        start = time()
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
                 blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
         
         for block in blocks:
             block.load_data()
-            
-            print('{0:02d}  {1:.4f}s {2:.4f}s {3:.2f}MB'.format(block.index, block.load_t,block.decode_t,self.mem()))
+        
+        print('{0:.4f}'.format(time()-start))
+        
         return None
 
+    def load_blocks_mp(self):
+        self.mem()
+ 
+        N = len(self.mosaic_found.items())
+
+        procs  = [] 
+        blocks = []
+
+        start = time()
+        # create processes
+        for index,item in enumerate(self.mosaic_found.items()):
+            if item[1] == True:
+                blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
+                procs.append(mp.Process(target=blocks[index].load_data))
+
+        # run processes
+        for p in procs:
+            p.start()
+
+        # wait for execution
+        for p in procs:
+            p.join()
+
+        print('{0:.4f}s'.format(time()-start))
+
+        return None
