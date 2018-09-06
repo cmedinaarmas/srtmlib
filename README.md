@@ -2,4 +2,5 @@
 # STRM Lib
 STRM Lib is a package to decode data generated from the NASA's Shuttle Radar Topography Mission [STRM](https://www2.jpl.nasa.gov/srtm/).
 ## STRM data
-![Current results](map.png)
+![Current results](docs/map.png)
+![Current results](docs/map_wrapped.png)
