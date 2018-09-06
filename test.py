@@ -4,40 +4,52 @@ import block as bl
 class TestCalc(unittest.TestCase):
 
     def setUp(self):
-        src_file = 'data/everest/n27_e085_1arc_v3.bil'
-        self.arc_seconds = 1
-        self.b = bl.Block(src_file,1,0)
+        # define configuration
+        src_file_1arc = 'data/everest/n27_e085_1arc_v3.bil'
+        src_file_3arc = 'data/guadaloupe/n15_w062_3arc_v2.bil'
 
-        self.shape = None
-        if self.arc_seconds == 1:
-            self.shape = (3601,3601)
-        elif self.arc_seconds == 3:
-            self.shape = (1201,1201)
-        else:
-            self.shape = (0,0)
-        pass
+        # instantiate 1-arc-second object
+        self.block_1arc = bl.Block(src_file_1arc,1,0)
+
+        # instantiate 3-arc-second object
+        self.block_3arc = bl.Block(src_file_3arc,3,0)
 
     def trearDown(self):
         pass
 
     def test_read_bytes(self):
         bytes_to_read = 2
-        result = self.b.read_bytes(bytes_to_read)
+        result = self.block_1arc.read_bytes(bytes_to_read)
         self.assertEqual(result[0],117)
         self.assertEqual(result[1],7)
 
     def test_decode_hgt(self):
-        bytes_to_read = self.shape[0]*self.shape[1]*2
-        data = self.b.read_bytes(bytes_to_read)
+        shape = self.block_1arc.shape
+        bytes_to_read = shape[0]*shape[1]*2
+        data = self.block_1arc.read_bytes(bytes_to_read)
 
         # test default format
         wrapped = False
-        heights = self.b.decode_hgt(data, wrapped)
+        heights = self.block_1arc.decode_hgt(data, wrapped)
         self.assertEqual(heights[0],1909)
+
         # test wrapped format
         wrapped = True
-        heights = self.b.decode_hgt(data, wrapped)
+        heights = self.block_1arc.decode_hgt(data, wrapped)
         self.assertEqual(heights[0],117)
+
+    def test_load_data(self):
+
+        # test size of loaded heights
+
+        # 1-arc-second
+        self.block_1arc.load_data()
+        self.assertEqual(self.blk_1arc.shape,(3601,3601))
+
+        # 3-arc-second
+        self.block_3arc.load_data()
+        self.assertEqual(self.block_3arc.shape,(1201,1201))
+
 
 
 
