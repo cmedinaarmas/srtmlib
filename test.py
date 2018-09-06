@@ -44,7 +44,7 @@ class TestCalc(unittest.TestCase):
 
         # 1-arc-second
         self.block_1arc.load_data()
-        self.assertEqual(self.blk_1arc.shape,(3601,3601))
+        self.assertEqual(self.block_1arc.shape,(3601,3601))
 
         # 3-arc-second
         self.block_3arc.load_data()
