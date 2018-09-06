@@ -17,5 +17,8 @@ jobs:
     steps:
       - checkout
       - run:
-          command:  pip install numpy 
+          name: install dependencies
+          command: pip install numpy
+      - run:
+          name: test code
           command:  python test.py
