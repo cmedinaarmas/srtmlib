@@ -18,7 +18,10 @@ jobs:
       - checkout
       - run:
           name: install dependencies
-          command: pip install numpy
+          command: |
+             python3 -m venv venv
+             . venv/bin/activate
+             pip install numpy
       - run:
           name: test code
           command:  python test.py
