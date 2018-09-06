@@ -9,9 +9,9 @@ class TestCalc(unittest.TestCase):
         self.b = bl.Block(src_file,1,0)
 
         self.shape = None
-        if arc == 1:
+        if self.arc_seconds == 1:
             self.shape = (3601,3601)
-        elif arc == 3:
+        elif self.arc_seconds == 3:
             self.shape = (1201,1201)
         else:
             self.shape = (0,0)
