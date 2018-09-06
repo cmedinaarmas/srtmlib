@@ -8,7 +8,7 @@ import multiprocessing as mp
 
 import block as bl
 
-class Strm:
+class Srtm:
 
     #initializer
     def __init__(self,src_dir):
@@ -40,7 +40,7 @@ class Strm:
             coordinate *= -1
         return (coordinate)
 
-    
+
     def build_bil_set(self,verbose=True):
         for lat in range(self.lat_min, self.lat_max+1):
             for lon in range(self.lon_min, self.lon_max+1):
@@ -59,7 +59,7 @@ class Strm:
 
                 filename = '{0}{1}_{2}{3:03}_{4}_{5}.bil'.format(hem_lat,abs(lat),hem_lon,abs(lon),self.arc,self.v)
                 self.mosaic_files.append(filename)
-                
+
         if(verbose):
             for f in self.mosaic_files:
                 self.is_file(f)
@@ -68,17 +68,17 @@ class Strm:
 
 
     def read_dir(self):
-         
+
         coordinates = []
         os.chdir(self.src_dir)
-        
+
         print('Exploring {0}'.format(self.src_dir))
-        
+
         for file_name in glob.glob("*.bil"):
 
             raw_name = file_name.split('_')
             raw_name[3] = raw_name[3].split('.')[0]
-            
+
             lat = self.split_bil(raw_name[0])
             lon = self.split_bil(raw_name[1])
 
@@ -86,7 +86,7 @@ class Strm:
             coordinates.append((lat,lon))
 
         self.coordinates = np.array(coordinates)
- 
+
         self.lat_max, self.lon_max = self.coordinates.max(axis=0)
         self.lat_min, self.lon_min = self.coordinates.min(axis=0)
 
@@ -96,7 +96,7 @@ class Strm:
         return None
 
 
-    #check if file exists 
+    #check if file exists
     def is_file(self,src_file):
 
         found = os.path.isfile(self.src_dir+src_file)
@@ -106,7 +106,7 @@ class Strm:
             print('{0}  FOUND'.format(src_file))
         else:
             print('{0}  NOT FOUND'.format(src_file))
-        
+
         return None
 
     #print the structure of found files
@@ -141,29 +141,29 @@ class Strm:
         return mem
 
     def load_blocks(self):
-        
+
 
         self.mem()
         blocks = []
-        
+
         start = time()
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
                 blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
-        
+
         for block in blocks:
             block.load_data()
-        
+
         print('{0:.4f}'.format(time()-start))
-        
+
         return None
 
     def load_blocks_mp(self):
         self.mem()
- 
+
         N = len(self.mosaic_found.items())
 
-        procs  = [] 
+        procs  = []
         blocks = []
 
         start = time()
