@@ -4,4 +4,8 @@ STRM Lib is a package to decode data generated from the NASA's Shuttle Radar Top
 ## STRM Current results
 Block class can process data from a single file (1 degree tiles). Below a sample of a 1-arc-second accuracy (30 meters) file in two versions: Height representation and wrapped.
 
-![Current results](docs/block.png)
+```
+<p align="center">
+  <img src="docs/block.png">
+</p>
+```
