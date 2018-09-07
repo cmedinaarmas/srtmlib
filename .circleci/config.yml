@@ -27,4 +27,4 @@ jobs:
           name: test code
           command: |
            . venv/bin/activate
-           python srtmlib/test.py
+           python test.py
