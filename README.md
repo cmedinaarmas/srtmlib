@@ -6,6 +6,7 @@ The Tile class decodes data from a single file and represents heights contained 
 <p align="center">
   <img src="docs/block.png">
 </p>
+
 ## SRTM Mosaic class
 
 :construction:
