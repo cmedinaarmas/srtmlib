@@ -1,3 +1,3 @@
 # __init__.py
-from core import Tile
-from core import Mosaic
+from srtmlib.core import Tile
+from srtmlib.core import Mosaic
