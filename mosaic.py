@@ -8,7 +8,7 @@ import multiprocessing as mp
 
 import block as bl
 
-class Srtm:
+class Mosaic:
 
     #initializer
     def __init__(self,src_dir):
