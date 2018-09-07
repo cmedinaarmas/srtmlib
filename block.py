@@ -1,4 +1,8 @@
 from struct import *
+
+import array
+import os
+
 import numpy as np
 import time
 
@@ -20,14 +24,30 @@ class Block:
             self.shape = (0,0)
 
 
-    def read_bytes(self, bytes_to_read):
+    def read_bytes_LC(self, bytes_to_read):
+        # DEPRECATED
+        # ---------
         # read binary file as unsigned char type
-        # return np array
+        # using a list comprehension
 
         f = open(self.src_file, "rb")
         raw_bytes = [ unpack('B',f.read(1))[0] for byte in range(bytes_to_read) ]
         f.close()
         loaded_bytes =  np.asarray(raw_bytes)
+
+        return loaded_bytes
+
+
+    def read_bytes(self, bytes_to_read):
+        # read binary file as unsigned char type
+        # using an array.fromfile
+
+        raw_bytes = array.array('B')
+        
+        f = open(self.src_file, "rb")
+        raw_bytes.fromfile(f,bytes_to_read)
+        f.close()
+        loaded_bytes = np.asarray(raw_bytes,np.int64)
 
         return loaded_bytes
 
