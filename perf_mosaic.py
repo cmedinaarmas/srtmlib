@@ -20,11 +20,13 @@ d.build_bil_set()
 d.mosaic_print_structure()
 
 t1 = time.time()
-d.load_blocks_mp()
-#d.load_blocks()
+d.load_tiles_mp()
+#d.load_tiles_()
 t2 = time.time()
 
 print('{0}'.format(t2-t1))
-#d.load_blocks()
+
 
 d.mem(msg=True)
+# pc
+# 13.7890s

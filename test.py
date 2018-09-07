@@ -1,5 +1,5 @@
 import unittest
-import block as bl
+import tile as tl
 
 class TestCalc(unittest.TestCase):
 
@@ -9,33 +9,33 @@ class TestCalc(unittest.TestCase):
         src_file_3arc = 'data/guadaloupe/n15_w062_3arc_v2.bil'
 
         # instantiate 1-arc-second object
-        self.block_1arc = bl.Block(src_file_1arc,1,0)
+        self.tile_1arc = tl.Tile(src_file_1arc,1,0)
 
         # instantiate 3-arc-second object
-        self.block_3arc = bl.Block(src_file_3arc,3,0)
+        self.tile_3arc = tl.Tile(src_file_3arc,3,0)
 
     def trearDown(self):
         pass
 
     def test_read_bytes(self):
         bytes_to_read = 2
-        result = self.block_1arc.read_bytes(bytes_to_read)
+        result = self.tile_1arc.read_bytes(bytes_to_read)
         self.assertEqual(result[0],117)
         self.assertEqual(result[1],7)
 
     def test_decode_hgt(self):
-        shape = self.block_1arc.shape
+        shape = self.tile_1arc.shape
         bytes_to_read = shape[0]*shape[1]*2
-        data = self.block_1arc.read_bytes(bytes_to_read)
+        data = self.tile_1arc.read_bytes(bytes_to_read)
 
         # test default format
         wrapped = False
-        heights = self.block_1arc.decode_hgt(data, wrapped)
+        heights = self.tile_1arc.decode_hgt(data, wrapped)
         self.assertEqual(heights[0],1909)
 
         # test wrapped format
         wrapped = True
-        heights = self.block_1arc.decode_hgt(data, wrapped)
+        heights = self.tile_1arc.decode_hgt(data, wrapped)
         self.assertEqual(heights[0],117)
 
     def test_load_data(self):
@@ -43,12 +43,12 @@ class TestCalc(unittest.TestCase):
         # test size of loaded heights
 
         # 1-arc-second
-        self.block_1arc.load_data()
-        self.assertEqual(self.block_1arc.shape,(3601,3601))
+        self.tile_1arc.load_data()
+        self.assertEqual(self.tile_1arc.shape,(3601,3601))
 
         # 3-arc-second
-        self.block_3arc.load_data()
-        self.assertEqual(self.block_3arc.shape,(1201,1201))
+        self.tile_3arc.load_data()
+        self.assertEqual(self.tile_3arc.shape,(1201,1201))
 
 
 

@@ -6,7 +6,7 @@ from time import time
 
 import multiprocessing as mp
 
-import block as bl
+import tile as tl
 
 class Mosaic:
 
@@ -140,38 +140,38 @@ class Mosaic:
 
         return mem
 
-    def load_blocks(self):
+    def load_tiles(self):
 
 
         self.mem()
-        blocks = []
+        tiles = []
 
         start = time()
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
-                blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
+                tiles.append(tl.Tile(self.src_dir+item[0],int(self.arc[0]),index))
 
-        for block in blocks:
-            block.load_data()
+        for tile in tiles:
+            tile.load_data()
 
         print('{0:.4f}'.format(time()-start))
 
         return None
 
-    def load_blocks_mp(self):
+    def load_tiles_mp(self):
         self.mem()
 
         N = len(self.mosaic_found.items())
 
         procs  = []
-        blocks = []
+        tiles = []
         elements = 0
         start = time()
         # create processes
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
-                blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
-                procs.append(mp.Process(target=blocks[elements].load_data))
+                tiles.append(tl.Tile(self.src_dir+item[0],int(self.arc[0]),index))
+                procs.append(mp.Process(target=tiles[elements].load_data))
                 elements =+ 1
         # run processes
         for p in procs:

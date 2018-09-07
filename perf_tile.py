@@ -1,12 +1,10 @@
 # benchmark performance of block class
 
-
-
 import time
-import block as bl
+import tile as tl
 
 data = 'data/everest/n27_e085_1arc_v3.bil'
-b = bl.Block(data,1,0)
+b = tl.Tile(data,1,0)
 
 t1=time.time()
 data=b.read_bytes(3601*3601*2)
@@ -34,3 +32,9 @@ print('np array dtype {0}'.format(data.dtype))
 # load_data  4.788928031921387s
 # latency    -0.034050703048706055s
 
+# pc
+# read_bytes 0.09253764152526855s
+# decode_hgt 4.923607587814331s
+# load_data  5.001503944396973s
+# latency    -0.014641284942626953s
+# np array dtype int64

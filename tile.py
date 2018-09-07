@@ -6,7 +6,7 @@ import os
 import numpy as np
 import time
 
-class Block:
+class Tile:
 
     #initializer
     def __init__(self, src_file, arc, index):
