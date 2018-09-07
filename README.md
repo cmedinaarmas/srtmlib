@@ -10,4 +10,4 @@ The Tile class decodes data from a single file and represents heights contained 
 ## SRTM Mosaic class
 
 :construction:
-The Mosaic class renders multiples tiles into a single array. Missing tiles from a treated as void spaces.
+The Mosaic class joins multiple tiles into a single array. Missing tiles are treated as void spaces.
