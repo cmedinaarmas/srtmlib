@@ -1,3 +1,3 @@
-from block import *
-from mosaic import *
-
+# __init__.py
+from tile import Tile
+from mosaic import Mosaic
