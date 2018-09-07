@@ -5,8 +5,8 @@ class TestCalc(unittest.TestCase):
 
     def setUp(self):
         # define configuration
-        src_file_1arc = 'data/everest/n27_e085_1arc_v3.bil'
-        src_file_3arc = 'data/guadaloupe/n15_w062_3arc_v2.bil'
+        src_file_1arc = 'srtmlib/data/everest/n27_e085_1arc_v3.bil'
+        src_file_3arc = 'srtmlib/data/guadaloupe/n15_w062_3arc_v2.bil'
 
         # instantiate 1-arc-second object
         self.tile_1arc = core.Tile(src_file_1arc,1,0)
