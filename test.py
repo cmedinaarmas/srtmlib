@@ -1,5 +1,5 @@
 import unittest
-import tile as tl
+import core
 
 class TestCalc(unittest.TestCase):
 
@@ -9,10 +9,10 @@ class TestCalc(unittest.TestCase):
         src_file_3arc = 'data/guadaloupe/n15_w062_3arc_v2.bil'
 
         # instantiate 1-arc-second object
-        self.tile_1arc = tl.Tile(src_file_1arc,1,0)
+        self.tile_1arc = core.Tile(src_file_1arc,1,0)
 
         # instantiate 3-arc-second object
-        self.tile_3arc = tl.Tile(src_file_3arc,3,0)
+        self.tile_3arc = core.Tile(src_file_3arc,3,0)
 
     def trearDown(self):
         pass

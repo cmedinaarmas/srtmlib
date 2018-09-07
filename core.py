@@ -1,12 +1,25 @@
+#core.py
+
+#mosaic
 import glob, os
 from collections import defaultdict
 import numpy as np
 import psutil
 from time import time
-
 import multiprocessing as mp
 
-import tile as tl
+
+
+#tile
+from struct import *
+
+import array
+#import os
+
+#import numpy as np
+#import time
+
+
 
 class Mosaic:
 
@@ -149,7 +162,7 @@ class Mosaic:
         start = time()
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
-                tiles.append(tl.Tile(self.src_dir+item[0],int(self.arc[0]),index))
+                tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),index))
 
         for tile in tiles:
             tile.load_data()
@@ -170,7 +183,7 @@ class Mosaic:
         # create processes
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
-                tiles.append(tl.Tile(self.src_dir+item[0],int(self.arc[0]),index))
+                tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),index))
                 procs.append(mp.Process(target=tiles[elements].load_data))
                 elements =+ 1
         # run processes
@@ -184,3 +197,83 @@ class Mosaic:
         print('{0:.4f}s'.format(time()-start))
 
         return None
+
+
+
+
+
+class Tile:
+
+    #initializer
+    def __init__(self, src_file, arc, index):
+        self.src_file = src_file
+        self.arc = arc
+        self.index = index
+        self.heights = None
+
+        self.shape = None
+        if arc == 1:
+            self.shape = (3601,3601)
+        elif arc == 3:
+            self.shape = (1201,1201)
+        else:
+            self.shape = (0,0)
+
+
+    def read_bytes_LC(self, bytes_to_read):
+        # DEPRECATED
+        # ---------
+        # read binary file as unsigned char type
+        # using a list comprehension
+
+        f = open(self.src_file, "rb")
+        raw_bytes = [ unpack('B',f.read(1))[0] for byte in range(bytes_to_read) ]
+        f.close()
+        loaded_bytes =  np.asarray(raw_bytes)
+
+        return loaded_bytes
+
+
+    def read_bytes(self, bytes_to_read):
+        # read binary file as unsigned char type
+        # using an array.fromfile
+
+        raw_bytes = array.array('B')
+
+        f = open(self.src_file, "rb")
+        raw_bytes.fromfile(f,bytes_to_read)
+        f.close()
+        loaded_bytes = np.asarray(raw_bytes,np.int64)
+
+        return loaded_bytes
+
+
+    def decode_hgt(self, src_bytes, wrapped):
+
+        # decode height stored in big endian format
+        size = src_bytes.shape[0]
+        heights = []
+
+        if not wrapped:
+            heights = [ ((src_bytes[i+1]<<8) + src_bytes[i]) for i in range(0, size, 2) ]
+        else:
+            heights = [ src_bytes[i] for i in range(0, size, 2) ]
+        decoded = np.asarray(heights)
+
+        return decoded
+
+
+    def load_data(self, wrapped=False):
+
+        samples_per_line, lines = self.shape
+        bytes_per_sample = 2
+        max_val = 8480
+
+        # read from file
+        # decode data
+        heights = self.decode_hgt(self.read_bytes(samples_per_line*bytes_per_sample*lines), wrapped)
+        # special height values handling
+        # TODO
+        # self.heights = np.clip( np.reshape(heights,(samples_per_line,lines)),0,max_val)
+
+        self.heights = np.reshape(heights,(samples_per_line,lines))

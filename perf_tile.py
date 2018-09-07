@@ -15,10 +15,10 @@
 
 
 import time
-import tile as tl
+import core
 
 def perf_tile(src_file):
-    b = tl.Tile(src_file,1,0)
+    b = core.Tile(src_file,1,0)
 
     t1=time.time()
     data=b.read_bytes(3601*3601*2)
