@@ -10,6 +10,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Update pipenv
+          command: pip install --upgrade pip
+      - run:
           name: install dependencies
           command: |
              python3 -m venv venv
