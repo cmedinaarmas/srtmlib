@@ -74,13 +74,11 @@ class Block:
         max_val = 8480
 
         # read from file
-        data = self.read_bytes(samples_per_line*bytes_per_sample*lines)
         # decode data
-        heights = self.decode_hgt(data, wrapped)
+        heights = self.decode_hgt(self.read_bytes(samples_per_line*bytes_per_sample*lines), wrapped)
         # special height values handling
         # TODO
         # self.heights = np.clip( np.reshape(heights,(samples_per_line,lines)),0,max_val)
         
-        # store heights 
         self.heights = np.reshape(heights,(samples_per_line,lines))
         

@@ -165,14 +165,14 @@ class Srtm:
 
         procs  = []
         blocks = []
-
+        elements = 0
         start = time()
         # create processes
         for index,item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
                 blocks.append(bl.Block(self.src_dir+item[0],int(self.arc[0]),index))
-                procs.append(mp.Process(target=blocks[index].load_data))
-
+                procs.append(mp.Process(target=blocks[elements].load_data))
+                elements =+ 1
         # run processes
         for p in procs:
             p.start()
