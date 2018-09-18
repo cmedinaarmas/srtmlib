@@ -1,5 +1,10 @@
 #core.py
+# Class
+#   - Mosaic
+#   - Tile
 
+# dependencies
+ 
 # mosaic
 import glob, os
 from collections import defaultdict
@@ -8,6 +13,9 @@ import multiprocessing as mp
 
 # tile
 import array
+
+
+# class definitions
 
 class Mosaic:
 
@@ -31,6 +39,13 @@ class Mosaic:
 
         self.mosaic_files = []
         self.mosaic_found = {}
+        self.tile_positions = {}
+
+        self.tile_size = 0
+
+        #tiles
+        self.tiles = []
+        self.heighs = None
 
     def split_bil(self,reference):
         hemisphere = reference[0]
@@ -41,8 +56,8 @@ class Mosaic:
 
 
     def build_bil_set(self,verbose=True):
-        for lat in range(self.lat_min, self.lat_max+1):
-            for lon in range(self.lon_min, self.lon_max+1):
+        for i,lat in enumerate(range(self.lat_min, self.lat_max+1)):
+            for j,lon in enumerate(range(self.lon_min, self.lon_max+1)):
                 hem_lat=''
                 hem_lon=''
 
@@ -58,7 +73,7 @@ class Mosaic:
 
                 filename = '{0}{1}_{2}{3:03}_{4}_{5}.bil'.format(hem_lat,abs(lat),hem_lon,abs(lon),self.arc,self.v)
                 self.mosaic_files.append(filename)
-
+                self.tile_positions[filename] = [i,j]
         if(verbose):
             for f in self.mosaic_files:
                 self.is_file(f)
@@ -110,48 +125,50 @@ class Mosaic:
 
     #print the structure of found files
     def mosaic_print_structure(self):
-
         print('-------')
-        for i,f in enumerate(self.mosaic_files):
+        for i, f in enumerate(self.mosaic_files):
             if(self.mosaic_found[f]):
                 print(self.map_char,end='',flush=True)
             else:
                 print(' ',end='',flush=True)
-
+            
             if((i+1)%(abs(1+(self.lon_max-self.lon_min)))==0):
                 print()
 
         print('-------')
         return None
 
+
+    #DEPRECATED
     def load_tiles(self):
 
         tiles = []
 
-        for index,item in enumerate(self.mosaic_found.items()):
+        for index, item in enumerate(self.mosaic_found.items()):
             if item[1] == True:
                 tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),index))
 
         for tile in tiles:
             tile.load_data()
 
-
-
         return None
+
 
     def load_tiles_mp(self):
 
         N = len(self.mosaic_found.items())
 
         procs  = []
-        tiles = []
+        #tiles = []
         elements = 0
 
         # create processes
-        for index,item in enumerate(self.mosaic_found.items()):
+        for item in self.mosaic_found.items():
             if item[1] == True:
-                tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),index))
-                procs.append(mp.Process(target=tiles[elements].load_data))
+                pos = self.tile_positions[item[0]]
+
+                self.tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),pos[0],pos[1]))
+                procs.append(mp.Process(target=self.tiles[elements].load_data))
                 elements =+ 1
         # run processes
         for p in procs:
@@ -161,17 +178,50 @@ class Mosaic:
         for p in procs:
             p.join()
 
+        # store heights
+        self.tile_size = self.tiles[0].shape[0]
+        
         return None
 
+    # 
+    def merge_tiles(self):
+        # compute size of mosaic in tiles
+        c = 1 + self.lon_max - self.lon_min
+        r = 1 + self.lat_max - self.lat_min
+
+        print('c={0},r={1}'.format(c,r))
+        # number of pixels
+        cols = c * (self.tile_size - 1)
+        rows = r * (self.tile_size - 1)
+        print('cols={0},rows={1}'.format(cols,rows))
+        # number of pixels
+        self.data = np.empty((rows,cols),dtype=np.int64)
+        print(self.data.shape)
+        
+        for tile in self.tiles:
+            self.add_tile(tile, self.tile_size-1)
+        pass
+
+    # add a tile to the mosaic
+    def add_tile(self, tile, sz):
+        r = tile.i * sz
+        c = tile.j * sz
+        
+        self.data[r:(r+sz),c:(c+sz)] = tile.heights
+        pass
 
 class Tile:
 
     #initializer
-    def __init__(self, src_file, arc, index):
+    def __init__(self, src_file, arc, i, j):
         self.src_file = src_file
         self.arc = arc
-        self.index = index
+        #self.index = index
         self.heights = None
+
+        # mosaic coordinates
+        self.i = i
+        self.j = j
 
         self.shape = None
         if arc == 1:

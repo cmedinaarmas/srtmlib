@@ -13,7 +13,12 @@ def perf_mosaic(data):
     t1 = time.time()
     d.load_tiles_mp()
     t2 = time.time()
-    print('{0}'.format(t2-t1))
+
+    d.merge_tiles()
+    t3 = time.time()
+    #print(d.tile_positions)
+    print('load-tiles: {0}'.format(t2-t1))
+    print('merge-tiles: {0}'.format(t3-t2))
 
     return None
 
@@ -67,17 +72,12 @@ DESCRIPTION
         src = sys.argv[2]
 
         if option == 'm':
-            #src_path='/home/cm/Documents/cm/srtm/srtmlib/data/everest/' #dell
-            #src = '/home/cm/git/srtmlib/data/everest/' #cx
             perf_mosaic(src)
 
         elif option == 't':
-            #data = 'data/everest/n27_e085_1arc_v3.bil'
             perf_tile(src)
 
         else:
             print('Unkown option: {0}'.format(option))
     else:
         print('Not enough parameters')
-# pc
-# 13.7890s
