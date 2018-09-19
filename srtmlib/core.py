@@ -10,6 +10,8 @@ import glob, os
 from collections import defaultdict
 import numpy as np
 import multiprocessing as mp
+from threading import Thread
+
 
 # tile
 import array
@@ -139,37 +141,30 @@ class Mosaic:
         return None
 
 
-    def load_tiles_mp(self):
-
-       # procs  = []
-
+    def load_tiles(self):
+ 
         # create processes
         for item in self.mosaic_found.items():
             if item[1] == True:
                 pos = self.tile_positions[item[0]]
                 self.tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),pos[0],pos[1]))
-                print('Adding to self.tiles: ',item[0],pos)
+                #print('Adding to self.tiles: ',item[0],pos)
         
-        for tile in self.tiles:
-            print('Adding to procs: ',tile.src_file)
-            proc = mp.Process(target=tile.load_data)
-            self.procs.append(proc)
+        threads = [Thread(target=tile.load_data) for tile in self.tiles]
         
         # run processes
-        for p in self.procs:
-            p.start()
+        for thread in threads: thread.start()
 
         # wait for execution
-        for p in self.procs:
-            p.join()
+        for thread in threads: thread.join()
 
         # store heights
         self.tile_size = self.tiles[0].shape[0]
         
 
-        for tile in self.tiles:
-            #print('After load: ',tile.src_file, tile.heights[0], tile.heights[-1])
-            print('After load:', tile.src_file, tile.processed)
+        #for tile in self.tiles:
+            #print('After load: ',tile.src_file, tile.heights[0,0], tile.heights[-1,-1])
+            #print('After load:', tile.src_file, tile.processed)
         return None
 
     # 
@@ -188,8 +183,8 @@ class Mosaic:
         self.data = np.zeros((rows,cols),dtype=np.int64)
         print(self.data.shape)
         
-        #for tile in self.tiles:
-        #    self.add_tile(tile)
+        for tile in self.tiles:
+            self.add_tile(tile)
         
         pass
 
@@ -203,7 +198,7 @@ class Mosaic:
         r = tile.i * sz
         c = tile.j * sz
         
-        #self.data[r:(r+sz), c:(c+sz)] = tile.heights
+        self.data[r:(r+sz), c:(c+sz)] = tile.heights[:-1,:-1]
         pass
 
 class Tile:
@@ -270,6 +265,6 @@ class Tile:
         # self.heights = np.clip( np.reshape(heights,(samples_per_line,lines)),0,max_val)
         self.heights = np.reshape(heights,(samples_per_line,lines)) 
         self.processed = True
-        print('From tile.load_data in: ', self.src_file, self.heights[0,0], self.heights[-1,-1])
+        #print('From tile.load_data in: ', self.src_file, self.heights[0,0], self.heights[-1,-1])
 
         pass

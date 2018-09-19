@@ -11,7 +11,7 @@ def perf_mosaic(data):
     d.mosaic_print_structure()
 
     t1 = time.time()
-    d.load_tiles_mp()
+    d.load_tiles()
     t2 = time.time()
 
     d.merge_tiles()
