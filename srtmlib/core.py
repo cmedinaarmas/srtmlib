@@ -45,7 +45,7 @@ class Mosaic:
 
         #tiles
         self.tiles = []
-        self.heighs = None
+        self.procs =  []
 
     def split_bil(self,reference):
         hemisphere = reference[0]
@@ -114,7 +114,7 @@ class Mosaic:
     def is_file(self,src_file):
 
         found = os.path.isfile(self.src_dir+src_file)
-        self.mosaic_found[src_file]= found
+        self.mosaic_found[src_file] = found
 
         if(found):
             print('{0}  FOUND'.format(src_file))
@@ -139,48 +139,37 @@ class Mosaic:
         return None
 
 
-    #DEPRECATED
-    def load_tiles(self):
-
-        tiles = []
-
-        for index, item in enumerate(self.mosaic_found.items()):
-            if item[1] == True:
-                tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),index))
-
-        for tile in tiles:
-            tile.load_data()
-
-        return None
-
-
     def load_tiles_mp(self):
 
-        N = len(self.mosaic_found.items())
-
-        procs  = []
-        #tiles = []
-        elements = 0
+       # procs  = []
 
         # create processes
         for item in self.mosaic_found.items():
             if item[1] == True:
                 pos = self.tile_positions[item[0]]
-
                 self.tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),pos[0],pos[1]))
-                procs.append(mp.Process(target=self.tiles[elements].load_data))
-                elements =+ 1
+                print('Adding to self.tiles: ',item[0],pos)
+        
+        for tile in self.tiles:
+            print('Adding to procs: ',tile.src_file)
+            proc = mp.Process(target=tile.load_data)
+            self.procs.append(proc)
+        
         # run processes
-        for p in procs:
+        for p in self.procs:
             p.start()
 
         # wait for execution
-        for p in procs:
+        for p in self.procs:
             p.join()
 
         # store heights
         self.tile_size = self.tiles[0].shape[0]
         
+
+        for tile in self.tiles:
+            #print('After load: ',tile.src_file, tile.heights[0], tile.heights[-1])
+            print('After load:', tile.src_file, tile.processed)
         return None
 
     # 
@@ -194,20 +183,27 @@ class Mosaic:
         cols = c * (self.tile_size - 1)
         rows = r * (self.tile_size - 1)
         print('cols={0},rows={1}'.format(cols,rows))
+        
         # number of pixels
-        self.data = np.empty((rows,cols),dtype=np.int64)
+        self.data = np.zeros((rows,cols),dtype=np.int64)
         print(self.data.shape)
         
-        for tile in self.tiles:
-            self.add_tile(tile, self.tile_size-1)
+        #for tile in self.tiles:
+        #    self.add_tile(tile)
+        
         pass
 
     # add a tile to the mosaic
-    def add_tile(self, tile, sz):
+    def add_tile(self, tile):
+
+        print(tile.src_file)
+        #print(tile.heights[0,:])
+
+        sz = self.tile_size -1
         r = tile.i * sz
         c = tile.j * sz
         
-        self.data[r:(r+sz),c:(c+sz)] = tile.heights
+        #self.data[r:(r+sz), c:(c+sz)] = tile.heights
         pass
 
 class Tile:
@@ -231,6 +227,7 @@ class Tile:
         else:
             self.shape = (0,0)
 
+        self.processed = False
 
     def read_bytes(self, bytes_to_read):
         # read binary file as unsigned char type
@@ -271,5 +268,8 @@ class Tile:
         # TO DO
         # max_val = 8480
         # self.heights = np.clip( np.reshape(heights,(samples_per_line,lines)),0,max_val)
+        self.heights = np.reshape(heights,(samples_per_line,lines)) 
+        self.processed = True
+        print('From tile.load_data in: ', self.src_file, self.heights[0,0], self.heights[-1,-1])
 
-        self.heights = np.reshape(heights,(samples_per_line,lines))
+        pass
