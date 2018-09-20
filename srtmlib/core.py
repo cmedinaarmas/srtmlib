@@ -1,4 +1,5 @@
-#core.py
+# core.py
+
 # Class
 #   - Mosaic
 #   - Tile
@@ -56,7 +57,9 @@ class Mosaic:
             coordinate *= -1
         return (coordinate)
 
-
+    #build set of tiles contained inside min/max lat/lon
+    #store files in self.mosaic_files []
+    #store tiles coordinates in mosaic self.tile_positions {}
     def build_bil_set(self,verbose=True):
         for i,lat in enumerate(range(self.lat_min, self.lat_max+1)):
             for j,lon in enumerate(range(self.lon_min, self.lon_max+1)):
@@ -83,6 +86,12 @@ class Mosaic:
         return None
 
 
+    #def create_tile(self, filename, tile_location):
+        
+        
+
+    # scan source path
+    # get min/max lat/lon of mosaic
     def read_dir(self):
 
         coordinates = []
