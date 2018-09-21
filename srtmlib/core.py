@@ -61,6 +61,7 @@ class Mosaic:
     #store files in self.mosaic_files []
     #store tiles coordinates in mosaic self.tile_positions {}
     def build_bil_set(self,verbose=True):
+        d = self.lat_max-self.lat_min
         for i,lat in enumerate(range(self.lat_min, self.lat_max+1)):
             for j,lon in enumerate(range(self.lon_min, self.lon_max+1)):
                 hem_lat=''
@@ -78,7 +79,7 @@ class Mosaic:
 
                 filename = '{0}{1}_{2}{3:03}_{4}_{5}.bil'.format(hem_lat,abs(lat),hem_lon,abs(lon),self.arc,self.v)
                 self.mosaic_files.append(filename)
-                self.tile_positions[filename] = [i,j]
+                self.tile_positions[filename] = [d-i,j]
         if(verbose):
             for f in self.mosaic_files:
                 self.is_file(f)
@@ -157,58 +158,42 @@ class Mosaic:
             if item[1] == True:
                 pos = self.tile_positions[item[0]]
                 self.tiles.append(Tile(self.src_dir+item[0],int(self.arc[0]),pos[0],pos[1]))
-                #print('Adding to self.tiles: ',item[0],pos)
         
         threads = [Thread(target=tile.load_data) for tile in self.tiles]
-        
-        # run processes
         for thread in threads: thread.start()
-
-        # wait for execution
         for thread in threads: thread.join()
 
-        # store heights
+        #update tile size
         self.tile_size = self.tiles[0].shape[0]
         
-
-        #for tile in self.tiles:
-            #print('After load: ',tile.src_file, tile.heights[0,0], tile.heights[-1,-1])
-            #print('After load:', tile.src_file, tile.processed)
-        return None
+        return 0
 
     # 
     def merge_tiles(self):
-        # compute size of mosaic in tiles
+        # build mosaic array
         c = 1 + self.lon_max - self.lon_min
         r = 1 + self.lat_max - self.lat_min
 
-        print('c={0},r={1}'.format(c,r))
-        # number of pixels
         cols = c * (self.tile_size - 1)
         rows = r * (self.tile_size - 1)
-        print('cols={0},rows={1}'.format(cols,rows))
         
-        # number of pixels
         self.data = np.zeros((rows,cols),dtype=np.int64)
-        print(self.data.shape)
         
+        # add tiles to mosaic
         for tile in self.tiles:
             self.add_tile(tile)
         
-        pass
+        return 0
 
     # add a tile to the mosaic
     def add_tile(self, tile):
 
-        print(tile.src_file)
-        #print(tile.heights[0,:])
-
         sz = self.tile_size -1
         r = tile.i * sz
         c = tile.j * sz
-        
+
         self.data[r:(r+sz), c:(c+sz)] = tile.heights[:-1,:-1]
-        pass
+        return 0
 
 class Tile:
 
