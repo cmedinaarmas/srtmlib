@@ -19,8 +19,9 @@ def shade(heights, filename, az=90, alt=45, ve=1, mode=None,cmap='jet'):
     if mode == None:
         # plot hillshade intensity image
         shaded = ls.hillshade(heights.astype('float'), vert_exag=ve)
-        ax.imshow(shaded, cmap = 'gray')
+        ax.imshow(shaded, cmap='gray')
         plt.savefig(filename, dpi = height) 
+
     else:
         #blend hillshaded intensity
         rgb = ls.shade(heights.astype('float'), cmap=cmap, blend_mode=mode,vert_exag=ve)
