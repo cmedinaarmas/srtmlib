@@ -242,7 +242,9 @@ class Tile:
             heights = np.left_shift(high_b,8) + low_b
         else:
             heights = low_b
-
+        
+        # convert NULL values to 0
+        heights[heights > 65000] = 0
         return heights
 
 
@@ -261,4 +263,4 @@ class Tile:
         self.processed = True
         #print('From tile.load_data in: ', self.src_file, self.heights[0,0], self.heights[-1,-1])
 
-        pass
+        return 0
