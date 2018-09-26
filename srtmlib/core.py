@@ -244,7 +244,7 @@ class Tile:
             heights = low_b
         
         # convert NULL values to 0
-        heights[heights > 65000] = 0
+        heights[heights > 9000] = 0
         return heights
 
 
